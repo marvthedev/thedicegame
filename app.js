@@ -14,6 +14,8 @@ let scores,
     roundScore,
     currentPlayer,
     inputScore,
+    lastDice,
+    lastDice2,
     isPlaying,
     currentScoreP1 = document.querySelector('#current-0'),
     currentScoreP2 = document.querySelector('#current-1'),
@@ -21,7 +23,7 @@ let scores,
     diceDOM2 = document.querySelector('.dice2');
     
 reset();
-// hideDice();
+hideDice();
 
 //Start a New Game
 document.querySelector('.btn-new').addEventListener('click', reset);
@@ -29,8 +31,10 @@ document.querySelector('.btn-new').addEventListener('click', reset);
 //Input round
 document.querySelector('.input-score').addEventListener('submit', function() {
     inputScore = document.querySelector('.input-score').value;
-    console.log(inputScore);
 });
+
+//Form validation. If the value for the winning score is not entered, ask the user to input a value.
+
 
 //Roll Dice Button
 document.querySelector('.btn-roll').addEventListener('click', function() {
@@ -38,16 +42,28 @@ document.querySelector('.btn-roll').addEventListener('click', function() {
         let dice = Math.floor(Math.random() * 6) + 1;
         let dice2 = Math.floor(Math.random() * 6) + 1;
         diceDOM.style.display = 'block';
-        diceDOM.style.display = 'block';
+        diceDOM2.style.display = 'block';
         diceDOM.src = 'dice-' + dice + '.png';
         diceDOM2.src = 'dice-' + dice2 + '.png';
-        if (dice !== 1 && dice2 !==1) {
+        //Validate input form. If no winning score is entered, ask user to enter the winning score.
+        if (document.querySelector('.input-score').value === "") {
+            alert("Enter a value!");
+            reset();
+        //Change the player's points to zero if they roll two 6s in a row
+        }else if (dice === 6 && lastDice2 === 6) {
+            scores[currentPlayer] = 0;
+            document.querySelector('#score-' + currentPlayer).innerHTML = 0;
+            nextPlayer();
+        } else if (dice !== 1 && dice2 !==1) {
             roundScore += dice;
             roundScore += dice2;
             document.querySelector('#current-' + currentPlayer).innerHTML = roundScore; 
         } else {
             nextPlayer();
         }
+        lastDice = dice;
+        lastDice2 = dice2;
+        
     }
 });
 
@@ -82,6 +98,7 @@ function nextPlayer() {
 //Hide the dice from view
 function hideDice() {
     diceDOM.style.display = 'none';
+    diceDOM2.style.display = 'none';
 }
 
 //Reset & Initialize
@@ -101,6 +118,7 @@ function reset() {
     document.querySelector('.player-0-panel').classList.remove('active');
     document.querySelector('.player-1-panel').classList.remove('active');
     document.querySelector('.player-0-panel').classList.add('active');
+    hideDice();
 };
 
 
